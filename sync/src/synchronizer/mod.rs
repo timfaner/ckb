@@ -101,7 +101,7 @@ impl Synchronizer {
                     let tip_hash = active_chain.tip_hash();
                     let descendants = synchronizer.shared.state().remove_orphan_by_parent(&tip_hash);
                     if !descendants.is_empty() {
-                        for block in descendants {
+                        for (peer, block) in descendants {
                             // If we can not find the block's parent in database, that means it was failed to accept
                             // its parent, so we treat it as an invalid block as well.
                             if !synchronizer.shared.is_parent_stored(&block) {
@@ -111,7 +111,7 @@ impl Synchronizer {
                             let block = Arc::new(block);
                             let _ = synchronizer.shared.accept_block(
                                 &synchronizer.chain,
-                                PeerIndex::new(usize::max_value()),
+                                peer,
                                 Arc::clone(&block),
                             );
                         }
